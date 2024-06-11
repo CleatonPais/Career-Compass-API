@@ -2,7 +2,14 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
+import profileRoutes from "./routes/companyProfileRoutes.js"
 import cors from "cors";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const secretKey = process.env.JWT_SECRET;
+console.log('Retrieved Secret Key:', secretKey);
+
 
 const app = express();
 
@@ -14,9 +21,10 @@ app.use(
 
 app.use(bodyParser.json());
 
+
 mongoose
   .connect(
-    "mongodb+srv://cleatonps:Roger4192@cluster0.axe3bfr.mongodb.net/career_compass?retryWrites=true&w=majority"
+    "mongodb+srv://jackypatel9092:HARharmahadev1104@cluster0.vs8y4nd.mongodb.net/career_compass?retryWrites=true&w=majority&appName=Cluster0"
   )
   .then(() => {
     console.log("MongoDB connected");
@@ -26,5 +34,6 @@ mongoose
   });
 
 app.use("/api/users", userRoutes);
+app.use("/api/profile",profileRoutes)
 
 export default app;

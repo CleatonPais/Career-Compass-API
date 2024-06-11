@@ -1,4 +1,4 @@
-import CompanyProfile from "../models/CompanyProfile";
+import CompanyProfile from "../models/CompanyProfile.js";
 import { validationResult } from "express-validator";
 
 export const createCompanyProfile = async (req,res) => {
