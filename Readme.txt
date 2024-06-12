@@ -10,7 +10,7 @@
 
 
 // endpoint for creating companyprofile
-http://localhost:5000/api/profile/getcompanyprofile
+http://localhost:5000/api/profile/createcompanyprofile
 
 // endpoint for getcompanyprofile
 http://localhost:5000/api/profile/getcompanyprofile
