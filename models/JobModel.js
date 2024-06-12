@@ -1,40 +1,41 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const jobSchema = mongoose.Schema({
+const jobSchema = new mongoose.Schema({
   company_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Company",
-    required: true,
+    ref: 'Company',
+    required: true
   },
   title: {
     type: String,
-    required: true,
+    required: true
   },
   skills: {
     type: [String],
-    required: true,
+    required: true
   },
   description: {
     type: String,
-    required: true,
+    required: true
   },
   requirements: {
-    type: String,
-    required: true,
+    type: [String],
+    required: true
   },
   location: {
     type: String,
-    required: true,
+    required: true
   },
   creation_date: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   expiry_date: {
     type: Date,
-    required: true,
-  },
+    required: true
+  }
 });
 
-const Job = mongoose.model("Job", jobSchema);
+const Job = mongoose.model('Job', jobSchema);
+
 export default Job;
