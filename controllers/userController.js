@@ -3,7 +3,7 @@ import Company from "../models/Company.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 const secretKey = process.env.JWT_SECRET;
@@ -37,6 +37,9 @@ export const signup = async (req, res) => {
       });
 
       await user.save();
+
+      const userProfile = new UserProfile({ user: user._id });
+      await userProfile.save();
 
       const payload = {
         user: {
