@@ -12,16 +12,11 @@ export const createJob = async (req, res) => {
 
 export const updateJob = async (req, res) => {
   const { id } = req.params;
-  const { title, skills, description, requirements, location, expiry_date } =
-    req.body;
-
-  console.log(`Update job request received with id: ${id}`);
-  console.log(`Request body: ${JSON.stringify(req.body)}`);
+  const { title, skills, description, requirements, location, expiry_date, role, salary } = req.body;
 
   try {
     const job = await Job.findById(id);
     if (!job) {
-      console.log("Job not found");
       return res.status(404).json({ msg: "Job not found" });
     }
 
@@ -32,19 +27,14 @@ export const updateJob = async (req, res) => {
     if (requirements) jobFields.requirements = requirements;
     if (location) jobFields.location = location;
     if (expiry_date) jobFields.expiry_date = expiry_date;
-
-    console.log(`Updating job with fields: ${JSON.stringify(jobFields)}`);
+    if (role) jobFields.role = role;
+    if (salary) jobFields.salary = salary;
 
     const updatedJob = await Job.findByIdAndUpdate(
       id,
       { $set: jobFields },
       { new: true }
     );
-
-    if (!updatedJob) {
-      console.log("Failed to update job");
-      return res.status(500).json({ msg: "Failed to update job" });
-    }
 
     res.status(200).json(updatedJob);
   } catch (err) {

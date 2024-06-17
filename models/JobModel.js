@@ -33,7 +33,16 @@ const jobSchema = new mongoose.Schema({
   expiry_date: {
     type: Date,
     required: true
-  }
+  },
+  role: {
+    type: String,
+    enum: ["fulltime", "parttime", "seasonal", "contract"],
+    required: true,
+  },
+  salary: {
+    type: String, 
+    required: true,
+  },
 });
 
 const Job = mongoose.model('Job', jobSchema);
