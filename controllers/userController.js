@@ -3,9 +3,10 @@ import Company from "../models/Company.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
-import crypto from "crypto";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const secretKey = crypto.randomBytes(32).toString("hex");
+const secretKey = process.env.JWT_SECRET;
 
 export const signup = async (req, res) => {
   const errors = validationResult(req);
