@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
 import profileRoutes from "./routes/companyProfileRoutes.js"
+import jobRoutes from "./routes/jobRoutes.js"
 import cors from "cors";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -34,6 +35,7 @@ mongoose
   });
 
 app.use("/api/users", userRoutes);
-app.use("/api/profile",profileRoutes)
+app.use("/api/profile",profileRoutes);
+app.use("/api/jobs",jobRoutes);
 
 export default app;
