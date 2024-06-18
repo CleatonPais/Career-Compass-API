@@ -29,7 +29,7 @@ router.post(
   createUserProfile
 );
 
-router.get("/updateprofile", authMiddleware, updateUserProfile )
+router.put("/updateprofile/:id", authMiddleware, updateUserProfile )
 router.get("/getuserprofile", authMiddleware, getUserProfile);
 
 export default router;
