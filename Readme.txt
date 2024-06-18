@@ -14,3 +14,14 @@ http://localhost:5000/api/profile/createcompanyprofile
 
 // endpoint for getcompanyprofile
 http://localhost:5000/api/profile/getcompanyprofile
+
+// endpoint for creating job
+http://localhost:5000/api/jobs/createjob
+
+//end point for updating job
+http://localhost:5000/api/jobs/update/6669303014314226ac752060
+// make sure you update 6669303014314226ac752060 with /:id ==> "job id"
+
+//end point for delete job
+http://localhost:5000/api/jobs/delete/6669303014314226ac752060
+// make sure you update 6669303014314226ac752060 with /:id ==> "job id"
