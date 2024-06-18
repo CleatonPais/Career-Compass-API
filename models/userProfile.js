@@ -1,42 +1,67 @@
+// models/UserProfile.js
 import mongoose from "mongoose";
 
 const UserProfileSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  bio: {
+  firstName: {
     type: String,
-    default: "",
+    required: true,
   },
-  jobTitle: {
+  lastName: {
     type: String,
-    default: "",
-  },
-  company: {
-    type: String,
-    default: "",
-  },
-  location: {
-    type: String,
-    default: "",
-  },
-  linkedinUrl: {
-    type: String,
-    default: "",
+    required: true,
   },
   skills: {
     type: [String],
-    default: [],
+    required: false,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  street: {
+    type: String,
+    required: true,
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
+  country: {
+    type: String,
+    required: true,
+  },
+  postalCode: {
+    type: String,
+    required: true,
+  },
+  jobTitle: {
+    type: String,
+    required: true,
+  },
+  jobDescription: {
+    type: String,
+    required: true,
+  },
+  company: {
+    type: String,
+    required: true,
+  },
+  startDate: {
+    type: String,
+    required: true,
+  },
+  jobEndDate: {
+    type: String,
+    required: true,
+  },
+  qualification: {
+    type: String,
+    required: true,
+  },
+  institute: {
+    type: String,
+    required: true,
+  },
+  qualificationEndDate: {
+    type: String,
+    required: true,
   },
 });
 

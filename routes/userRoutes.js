@@ -46,7 +46,4 @@ router.post(
   forgotPassword
 );
 
-router.get("/profile", authMiddleware, getProfile);
-router.put("/profile", authMiddleware, updateProfile);
-
 export default router;

@@ -1,41 +1,122 @@
+// controllers/userProfileController.js
 import UserProfile from "../models/UserProfile.js";
+import { validationResult } from "express-validator";
 
-export const getProfile = async (req, res) => {
+export const createUserProfile = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const {
+    firstName,
+    lastName,
+    skills,
+    street,
+    country,
+    postalCode,
+    jobTitle,
+    jobDescription,
+    company,
+    startDate,
+    jobEndDate,
+    qualification,
+    institute,
+    qualificationEndDate,
+  } = req.body;
+  const userId = req.user.id;
+
   try {
-    const userId = req.user.id; // Assuming you have a middleware to extract user ID from token
-    const userProfile = await UserProfile.findOne({ user: userId }).populate("user", ["name", "email"]);
+    const profile = new UserProfile({
+      userId,
+      firstName,
+      lastName,
+      skills,
+      street,
+      country,
+      postalCode,
+      jobTitle,
+      jobDescription,
+      company,
+      startDate,
+      jobEndDate,
+      qualification,
+      institute,
+      qualificationEndDate,
+    });
 
-    if (!userProfile) {
-      return res.status(404).json({ msg: "Profile not found" });
-    }
-
-    res.json(userProfile);
-  } catch (error) {
-    console.error(error.message);
+    await profile.save();
+    res.status(201).json(profile);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 };
 
-export const updateProfile = async (req, res) => {
-  const { bio, jobTitle, company, location, linkedinUrl, skills } = req.body;
-  const userId = req.user.id; // Assuming you have a middleware to extract user ID from token
+export const updateUserProfile = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    skills,
+    street,
+    country,
+    postalcode,
+    jobTitle,
+    jobDescription,
+    company,
+    startDate,
+    jobEndDate,
+    qualification,
+    institute,
+    qualificationEndDate,
+  } = req.body;
+  const userId = req.user.id;
+  const profileFields = {
+    firstName,
+    lastName,
+    skills,
+    street,
+    country,
+    postalcode,
+    jobTitle,
+    jobDescription,
+    company,
+    startDate,
+    jobEndDate,
+    qualification,
+    institute,
+    qualificationEndDate,
+  };
 
   try {
-    let userProfile = await UserProfile.findOne({ user: userId });
+    let profile = await UserProfile.findOne({ user: userId });
 
-    if (!userProfile) {
+    if (!profile) {
       return res.status(404).json({ msg: "Profile not found" });
     }
 
-    userProfile = await UserProfile.findOneAndUpdate(
+    profile = await UserProfile.findOneAndUpdate(
       { user: userId },
-      { $set: { bio, jobTitle, company, location, linkedinUrl, skills, updatedAt: Date.now() } },
+      { $set: profileFields },
       { new: true }
     );
 
-    res.json(userProfile);
-  } catch (error) {
-    console.error(error.message);
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const profile = await UserProfile.findOne({ userId: req.user.id }).populate("userId", ["name", "email"]);
+    if (!profile) {
+      return res.status(404).json({ msg: "Profile not found" });
+    }
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 };
