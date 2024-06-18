@@ -1,34 +1,45 @@
 import CompanyProfile from "../models/CompanyProfile.js";
 import { validationResult } from "express-validator";
 
-export const createCompanyProfile = async (req,res) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()})
-    }
-    
-    const { companyName, companyLogo, industry, companyDescription, address } = req.body;
-    // Automatically taken from the authenticated user
-    const userId = req.user.id; 
+export const createCompanyProfile = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-    try{
-        const profile = new CompanyProfile({
-            userId,
-            companyName,
-            companyLogo,
-            industry,
-            companyDescription,
-            address,
-        });
-        await profile.save();
-        res.status(201).json(profile);
-    }
-    catch(err){
-        console.log(err.message);
-        res.status(500).send("Server error")
-    }
+  const {
+    companyName,
+    industry,
+    companyDescription,
+    address
+  } = req.body;
 
-}
+  const companyLogo = req.file ? req.file.path : null;
+  const userId = req.user.id; // Extract userId from req.user
+
+  const profileFields = {
+    userId,
+    companyName,
+    companyLogo,
+    industry,
+    companyDescription,
+    address: {
+      street: address.street,
+      city: address.city,
+      country: address.country,
+      postalCode: address.postalCode,
+    }
+  };
+
+  try {
+    const profile = new CompanyProfile(profileFields);
+    await profile.save();
+    res.status(201).json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
 
 export const getCompanyProfile = async (req, res) => {
     try {
