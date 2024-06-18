@@ -38,9 +38,6 @@ export const signup = async (req, res) => {
 
       await user.save();
 
-      const userProfile = new UserProfile({ user: user._id });
-      await userProfile.save();
-
       const payload = {
         user: {
           id: user.id,
