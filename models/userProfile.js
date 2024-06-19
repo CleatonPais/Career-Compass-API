@@ -1,4 +1,3 @@
-// models/UserProfile.js
 import mongoose from "mongoose";
 
 const UserProfileSchema = new mongoose.Schema({
@@ -6,6 +5,9 @@ const UserProfileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+  },
+  profileImage: {
+    type: String,
   },
   firstName: {
     type: String,
@@ -16,55 +18,67 @@ const UserProfileSchema = new mongoose.Schema({
     required: true,
   },
   skills: {
-    type: [String],
-    required: false,
-  },
-  street: {
     type: String,
     required: true,
   },
-  country: {
-    type: String,
-    required: true,
+  address: {
+    street: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
   },
-  postalCode: {
-    type: String,
-    required: true,
+  experience: {
+    jobTitle: {
+      type: String,
+      required: true,
+    },
+    jobDescription: {
+      type: String,
+      required: true,
+    },
+    company: {
+      type: String,
+      required: true,
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
   },
-  jobTitle: {
-    type: String,
-    required: true,
-  },
-  jobDescription: {
-    type: String,
-    required: true,
-  },
-  company: {
-    type: String,
-    required: true,
-  },
-  startDate: {
-    type: String,
-    required: true,
-  },
-  jobEndDate: {
-    type: String,
-    required: true,
-  },
-  qualification: {
-    type: String,
-    required: true,
-  },
-  institute: {
-    type: String,
-    required: true,
-  },
-  qualificationEndDate: {
-    type: String,
-    required: true,
+  education: {
+    qualification: {
+      type: String,
+      required: true,
+    },
+    institute: {
+      type: String,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
   },
 });
 
-const UserProfile = mongoose.model("UserProfile", UserProfileSchema);
-
-export default UserProfile;
+export default mongoose.model("UserProfile", UserProfileSchema);
