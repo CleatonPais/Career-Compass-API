@@ -35,3 +35,7 @@ http://localhost:5000/api/userprofile/updateprofile/6670e6049d0b7a3b47f72c29
 
 // end point for get userprofile
 http://localhost:5000/api/userprofile/getuserprofile
+
+
+// To get all the jobs
+http://localhost:5000/api/jobs/all
