@@ -1,5 +1,4 @@
-// controllers/userProfileController.js
-import UserProfile from "../models/userProfile.js";
+import UserProfile from "../models/UserProfile.js";
 import { validationResult } from "express-validator";
 
 export const createUserProfile = async (req, res) => {
@@ -12,39 +11,42 @@ export const createUserProfile = async (req, res) => {
     firstName,
     lastName,
     skills,
-    street,
-    country,
-    postalCode,
-    jobTitle,
-    jobDescription,
-    company,
-    startDate,
-    jobEndDate,
-    qualification,
-    institute,
-    qualificationEndDate,
+    address,
+    experience,
+    education,
   } = req.body;
+  const profileImage = req.file ? req.file.path : null;
   const userId = req.user.id;
 
-  try {
-    const profile = new UserProfile({
-      userId,
-      firstName,
-      lastName,
-      skills,
-      street,
-      country,
-      postalCode,
-      jobTitle,
-      jobDescription,
-      company,
-      startDate,
-      jobEndDate,
-      qualification,
-      institute,
-      qualificationEndDate,
-    });
+  const profileFields = {
+    userId,
+    firstName,
+    lastName,
+    skills,
+    profileImage,
+    address: {
+      street: address.street,
+      city: address.city,
+      province: address.province,
+      country: address.country,
+      postalCode: address.postalCode,
+    },
+    experience: {
+      jobTitle: experience.jobTitle,
+      jobDescription: experience.jobDescription,
+      company: experience.company,
+      startDate: experience.startDate,
+      endDate: experience.endDate,
+    },
+    education: {
+      qualification: education.qualification,
+      institute: education.institute,
+      endDate: education.endDate,
+    },
+  };
 
+  try {
+    const profile = new UserProfile(profileFields);
     await profile.save();
     res.status(201).json(profile);
   } catch (err) {
@@ -52,57 +54,60 @@ export const createUserProfile = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
 export const updateUserProfile = async (req, res) => {
   const {
     firstName,
     lastName,
     skills,
-    street,
-    country,
-    postalcode,
-    jobTitle,
-    jobDescription,
-    company,
-    startDate,
-    jobEndDate,
-    qualification,
-    institute,
-    qualificationEndDate,
+    address,
+    experience,
+    education,
   } = req.body;
 
   const profileFields = {};
   if (firstName) profileFields.firstName = firstName;
   if (lastName) profileFields.lastName = lastName;
   if (skills) profileFields.skills = skills;
-  if (street) profileFields.street = street;
-  if (country) profileFields.country = country;
-  if (postalcode) profileFields.postalcode = postalcode;
-  if (jobTitle) profileFields.jobTitle = jobTitle;
-  if (jobDescription) profileFields.jobDescription = jobDescription;
-  if (company) profileFields.company = company;
-  if (startDate) profileFields.startDate = startDate;
-  if (jobEndDate) profileFields.jobEndDate = jobEndDate;
-  if (qualification) profileFields.qualification = qualification;
-  if (institute) profileFields.institute = institute;
-  if (qualificationEndDate) profileFields.qualificationEndDate = qualificationEndDate;
+  if (address) {
+    profileFields.address = {
+      street: address.street,
+      city: address.city,
+      province: address.province,
+      country: address.country,
+      postalCode: address.postalCode,
+    };
+  }
+  if (experience) {
+    profileFields.experience = {
+      jobTitle: experience.jobTitle,
+      jobDescription: experience.jobDescription,
+      company: experience.company,
+      startDate: experience.startDate,
+      endDate: experience.endDate,
+    };
+  }
+  if (education) {
+    profileFields.education = {
+      qualification: education.qualification,
+      institute: education.institute,
+      endDate: education.endDate,
+    };
+  }
+
+  if (req.file) {
+    profileFields.profileImage = req.file.path;
+  }
 
   try {
-    const id = req.params.id; // Retrieve the ID from the request parameters
-
+    const id = req.params.id;
     let profile = await UserProfile.findById(id);
 
     if (!profile) {
-      console.log("Profile not found in the database");
       return res.status(404).json({ msg: "Profile not found" });
     }
 
-    console.log("Profile found: ", profile);
-
-    profile = await UserProfile.findByIdAndUpdate(
-      id,
-      { $set: profileFields },
-      { new: true }
-    );
+    profile = await UserProfile.findByIdAndUpdate(id, { $set: profileFields }, { new: true });
 
     res.json(profile);
   } catch (err) {
@@ -110,7 +115,6 @@ export const updateUserProfile = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
 
 export const getUserProfile = async (req, res) => {
   try {
