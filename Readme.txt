@@ -25,3 +25,17 @@ http://localhost:5000/api/jobs/update/6669303014314226ac752060
 //end point for delete job
 http://localhost:5000/api/jobs/delete/6669303014314226ac752060
 // make sure you update 6669303014314226ac752060 with /:id ==> "job id"
+
+
+// end point for creating userprofile
+http://localhost:5000/api/userprofile/createuserprofile
+
+// end point for update userprofile
+http://localhost:5000/api/userprofile/updateprofile/6670e6049d0b7a3b47f72c29
+
+// end point for get userprofile
+http://localhost:5000/api/userprofile/getuserprofile
+
+
+// To get all the jobs
+http://localhost:5000/api/jobs/all

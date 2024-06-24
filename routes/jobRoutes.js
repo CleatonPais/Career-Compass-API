@@ -1,6 +1,6 @@
 import express from "express";
 import { check } from 'express-validator';
-import { createJob, deleteJob, updateJob} from "../controllers/JobController.js";
+import { createJob, deleteJob, updateJob, getAllJobs} from "../controllers/JobController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 
@@ -32,6 +32,9 @@ router.delete('/delete/:id',authMiddleware,deleteJob);
 
 // Update a job
 router.put('/update/:id', authMiddleware, updateJob);
+
+// get all jobs
+router.get("/all", authMiddleware, getAllJobs);
 
 
 export default router;

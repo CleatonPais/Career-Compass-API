@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
 import profileRoutes from "./routes/companyProfileRoutes.js"
 import jobRoutes from "./routes/jobRoutes.js"
+import userProfileRoutes from "./routes/userProfileRoutes.js"
 import cors from "cors";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -36,6 +37,7 @@ mongoose
 
 app.use("/api/users", userRoutes);
 app.use("/api/profile",profileRoutes);
-app.use("/api/jobs",jobRoutes);
+app.use("/api/jobs",jobRoutes);;
+app.use("/api/userprofile/",userProfileRoutes)
 
 export default app;
