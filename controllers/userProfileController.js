@@ -7,6 +7,9 @@ export const createUserProfile = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
+  console.log("Request Body:", req.body);
+  console.log("Request User:", req.user);
+
   const {
     firstName,
     lastName,
@@ -116,11 +119,17 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
+// getUserProfile controller method
 export const getUserProfile = async (req, res) => {
   try {
     const profile = await UserProfile.findOne({ userId: req.user.id }).populate("userId", ["name", "email"]);
     if (!profile) {
       return res.status(404).json({ msg: "Profile not found" });
+    }
+    // Construct the correct URL for the profile image
+    if (profile.profileImage) {
+      const imagePath = profile.profileImage.split('uploads\\')[1]; // Extract the filename
+      profile.profileImage = `${req.protocol}://${req.get('host')}/uploads/${imagePath}`;
     }
     res.json(profile);
   } catch (err) {

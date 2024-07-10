@@ -1,14 +1,13 @@
 import express from "express";
-import multer from "multer";
+import upload from '../middleware/upload.js';
 import { check } from "express-validator";
 import { createUserProfile, updateUserProfile, getUserProfile } from "../controllers/userProfileController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
 
 router.post(
-  "/createUserProfile",  // Ensure the endpoint matches exactly
+  "/createUserProfile",  
   [
     authMiddleware,
     upload.single('profileImage'),
@@ -33,7 +32,7 @@ router.post(
   createUserProfile
 );
 
-//router.put("/updateProfile/:id", [authMiddleware, upload.single('profileImage')], updateUserProfile);
+router.put("/updateProfile/:id", [authMiddleware, upload.single('profileImage')], updateUserProfile);
 router.get("/getUserProfile", authMiddleware, getUserProfile);
 
 export default router;
