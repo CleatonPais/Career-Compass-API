@@ -1,17 +1,28 @@
 import JobApplication from "../models/JobApplicationModel.js";
 
-
-
 export const createJobApplication = async (req, res) => {
-  const { job_id, user_id, company_id, firstName, lastName, email, phoneNumber } = req.body;
-    
-  if (!req.files || !req.files.resume || !req.files.cover_letter || !req.files.portfolio) {
+  const {
+    job_id,
+    user_id,
+    company_id,
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+  } = req.body;
+
+  if (
+    !req.files ||
+    !req.files.resume ||
+    !req.files.cover_letter ||
+    !req.files.portfolio
+  ) {
     return res.status(400).json({ msg: "Please upload all required files" });
   }
-  
-  const resume = req.files['resume'][0].filename;
-  const cover_letter = req.files['cover_letter'][0].filename;
-  const portfolio = req.files['portfolio'][0].filename;
+
+  const resume = req.files["resume"][0].filename;
+  const cover_letter = req.files["cover_letter"][0].filename;
+  const portfolio = req.files["portfolio"][0].filename;
 
   try {
     const newJobApplication = new JobApplication({
@@ -36,14 +47,12 @@ export const createJobApplication = async (req, res) => {
   }
 };
 
-
-
 // get all job applications candidate
 export const getCandidateJobApplication = async (req, res) => {
   try {
-    const jobApplication = await JobApplication.findAll({
+    const jobApplication = await JobApplication.find({
       user_id: req.user.id,
-    });
+    }).populate("job_id", "title location role");
     if (!jobApplication) {
       return res.status(404).json({ msg: "No Job Application not found" });
     }
@@ -58,9 +67,11 @@ export const getCandidateJobApplication = async (req, res) => {
 // get all job applicatoions employer
 export const getEmployerJobApplication = async (req, res) => {
   try {
-    const jobApplications = await JobApplication.find({ company_id: req.user.id })
-      .populate('job_id', 'title role') // populate job title and role
-      .populate('user_id', 'name'); // populate user details
+    const jobApplications = await JobApplication.find({
+      company_id: req.user.id,
+    })
+      .populate("job_id", "title role") // populate job title and role
+      .populate("user_id", "name"); // populate user details
 
     if (!jobApplications.length) {
       return res.status(404).json({ msg: "No Job Applications found" });
@@ -129,8 +140,9 @@ export const getJobApplicationById = async (req, res) => {
   const { id } = req.params;
   try {
     const jobApplication = await JobApplication.findById(id)
-      .populate('job_id', 'title role')
-      .populate('user_id', 'name');
+      .populate("job_id", "title role location description skills requirements")
+      .populate("company_id", "name")
+      .populate("user_id", "name");
     if (!jobApplication) {
       return res.status(404).json({ msg: "Job Application not found" });
     }
@@ -163,8 +175,6 @@ export const updateInterviewDates = async (req, res) => {
   }
 };
 
-
-
 // scheduleinverview
 export const scheduleInterview = async (req, res) => {
   const { id } = req.params;
@@ -187,7 +197,6 @@ export const scheduleInterview = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
-
 
 // rejectApplication
 export const rejectApplication = async (req, res) => {

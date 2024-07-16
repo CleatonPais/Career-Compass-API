@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 const interviewDateSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  time: { type: String, required: true }
+  time: { type: String, required: true },
 });
+
 const jobApplicationSchema = new mongoose.Schema({
   job_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -49,11 +50,20 @@ const jobApplicationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["submitted", "approved", "rejected", "pending","interview_scheduled"],
+    enum: [
+      "submitted",
+      "approved",
+      "rejected",
+      "pending",
+      "interview_scheduled",
+    ],
     required: true,
     default: "submitted",
   },
   interview_dates: [interviewDateSchema],
+  interview_details: {
+    type: String,
+  },
   creation_date: {
     type: Date,
     default: Date.now,
