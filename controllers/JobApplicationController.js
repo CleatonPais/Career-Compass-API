@@ -178,7 +178,7 @@ export const updateInterviewDates = async (req, res) => {
 // scheduleinverview
 export const scheduleInterview = async (req, res) => {
   const { id } = req.params;
-  const { interview_dates } = req.body;
+  const { interview_dates, interview_details } = req.body;
 
   try {
     const jobApplication = await JobApplication.findById(id);
@@ -187,6 +187,30 @@ export const scheduleInterview = async (req, res) => {
     }
 
     jobApplication.status = "interview_scheduled";
+    jobApplication.interview_dates = interview_dates;
+    jobApplication.interview_details = interview_details;
+    jobApplication.modified_date = new Date();
+
+    await jobApplication.save();
+    res.status(200).json(jobApplication);
+  } catch (err) {
+    console.error(`Server error: ${err.message}`);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// confirm interview
+export const confirmInterview = async (req, res) => {
+  const { id } = req.params;
+  const { interview_dates, interview_details } = req.body;
+
+  try {
+    const jobApplication = await JobApplication.findById(id);
+    if (!jobApplication) {
+      return res.status(404).json({ msg: "Job Application not found" });
+    }
+
+    jobApplication.status = "interview_confirmed";
     jobApplication.interview_dates = interview_dates;
     jobApplication.modified_date = new Date();
 
@@ -209,6 +233,27 @@ export const rejectApplication = async (req, res) => {
     }
 
     jobApplication.status = "rejected";
+    jobApplication.modified_date = new Date();
+
+    await jobApplication.save();
+    res.status(200).json(jobApplication);
+  } catch (err) {
+    console.error(`Server error: ${err.message}`);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// approve Application
+export const approveApplication = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const jobApplication = await JobApplication.findById(id);
+    if (!jobApplication) {
+      return res.status(404).json({ msg: "Job Application not found" });
+    }
+
+    jobApplication.status = "approved";
     jobApplication.modified_date = new Date();
 
     await jobApplication.save();

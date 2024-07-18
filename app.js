@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 
 mongoose
   .connect(
-    "mongodb+srv://jackypatel9092:HARharmahadev1104@cluster0.vs8y4nd.mongodb.net/career_compass?retryWrites=true&w=majority&appName=Cluster0"
+    "mongodb+srv://cleatonps:Roger4192@cluster0.axe3bfr.mongodb.net/career_compass?retryWrites=true&w=majority&appName=Cluster0"
   )
   .then(() => {
     console.log("MongoDB connected");

@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import express from "express";
 import { check } from "express-validator";
 import { authMiddleware } from "../middleware/authMiddleware.js";
@@ -12,8 +12,9 @@ import {
   updateJobApplication,
   getJobApplicationById,
   scheduleInterview,
-  rejectApplication
-
+  rejectApplication,
+  approveApplication,
+  confirmInterview,
 } from "../controllers/JobApplicationController.js";
 
 const router = express.Router();
@@ -24,18 +25,18 @@ router.post(
   [
     authMiddleware,
     upload.fields([
-      { name: 'resume', maxCount: 1 },
-      { name: 'cover_letter', maxCount: 1 },
-      { name: 'portfolio', maxCount: 1 },
+      { name: "resume", maxCount: 1 },
+      { name: "cover_letter", maxCount: 1 },
+      { name: "portfolio", maxCount: 1 },
     ]),
     [
       check("job_id", "Job ID is required").not().isEmpty(),
       check("user_id", "User ID is required").not().isEmpty(),
       check("company_id", "Company ID is required").not().isEmpty(),
-      check('firstName', 'First name is required').not().isEmpty(),
-      check('lastName', 'Last name is required').not().isEmpty(),
-      check('email', 'Email is required').isEmail(),
-      check('phoneNumber', 'Phone number is required').not().isEmpty(),
+      check("firstName", "First name is required").not().isEmpty(),
+      check("lastName", "Last name is required").not().isEmpty(),
+      check("email", "Email is required").isEmail(),
+      check("phoneNumber", "Phone number is required").not().isEmpty(),
     ],
   ],
   createJobApplication
@@ -59,7 +60,7 @@ router.get(
 );
 
 // get job application by ID
-router.get('/jobapplication/:id', authMiddleware, getJobApplicationById);
+router.get("/jobapplication/:id", authMiddleware, getJobApplicationById);
 
 // delete job application
 router.delete(
@@ -71,7 +72,13 @@ router.delete(
 // schedule interview
 router.put("/scheduleinterview/:id", authMiddleware, scheduleInterview);
 
+// confrim interview
+router.put("/confirminterview/:id", authMiddleware, confirmInterview);
+
 // reject application
 router.put("/rejectapplication/:id", authMiddleware, rejectApplication);
+
+// accept application
+router.put("/approveapplication/:id", authMiddleware, approveApplication);
 
 export default router;
