@@ -128,7 +128,7 @@ export const login = async (req, res) => {
 
     jwt.sign(payload, secretKey, { expiresIn: 3600 }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.json({ token, user_id: entity.id });
     });
   } catch (err) {
     console.error(err.message);
