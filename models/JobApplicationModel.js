@@ -56,6 +56,7 @@ const jobApplicationSchema = new mongoose.Schema({
       "rejected",
       "pending",
       "interview_scheduled",
+      "interview_confirmed",
     ],
     required: true,
     default: "submitted",
