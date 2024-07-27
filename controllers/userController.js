@@ -95,44 +95,81 @@ export const login = async (req, res) => {
   }
 
   const { email, password } = req.body;
+  let payload;
+  let entity;
+  let userid;
 
-  try {
-    let user = await User.findOne({ email });
-    let company = await Company.findOne({ email });
+  if (email === "admin@careercompass.com") {
+    console.log("trying to log as admin. Lets check password");
 
-    console.log(`User found: ${user}`);
-    console.log(`Company found: ${company}`);
+    const adminPass = process.env.ADMIN_KEY || "";
+    const isAdminPassValid = await bcrypt.compare(password, adminPass);
 
-    if (!user && !company) {
-      return res.status(400).json({ msg: "Invalid credentials" });
+    if (isAdminPassValid) {
+      console.log("hello admin, long time no see");
+      userid = "admin";
+      payload = {
+        user: {
+          id: "admin",
+          role: "admin",
+        },
+      };
+    } else {
+      console.log("sneseky senaky. you dont have the password");
     }
 
-    let entity = user || company;
-    console.log(`Entity selected: ${entity}`);
-
-    console.log(password + ` : ` + entity.password);
-
-    let isMatch = await bcrypt.compare(password, entity.password);
-    console.log(`Password match: ${isMatch}`);
-
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid credentials" });
-    }
-
-    const payload = {
+    payload = {
       user: {
-        id: entity.id,
-        role: entity.role,
+        id: "admin",
+        role: "admin",
       },
     };
 
     jwt.sign(payload, secretKey, { expiresIn: 3600 }, (err, token) => {
       if (err) throw err;
-      res.json({ token, user_id: entity.id });
+      res.json({ token, user_id: "admin" });
     });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
+  } else {
+    try {
+      let user = await User.findOne({ email });
+      let company = await Company.findOne({ email });
+
+      console.log(`User found: ${user}`);
+      console.log(`Company found: ${company}`);
+
+      if (!user && !company) {
+        return res.status(400).json({ msg: "Invalid credentials" });
+      }
+
+      let entity = user || company;
+      console.log(`Entity selected: ${entity}`);
+
+      console.log(password + ` : ` + entity.password);
+
+      let isMatch = await bcrypt.compare(password, entity.password);
+      console.log(`Password match: ${isMatch}`);
+
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Invalid credentials" });
+      } else {
+        userid = entity.id;
+      }
+
+      payload = {
+        user: {
+          id: entity.id,
+          role: entity.role,
+        },
+      };
+
+      jwt.sign(payload, secretKey, { expiresIn: 3600 }, (err, token) => {
+        if (err) throw err;
+        res.json({ token, user_id: entity.id });
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server error");
+    }
   }
 };
 
