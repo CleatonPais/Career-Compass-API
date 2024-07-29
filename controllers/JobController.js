@@ -2,7 +2,12 @@ import Job from "../models/JobModel.js";
 
 export const createJob = async (req, res) => {
   try {
-    const newJob = new Job({ ...req.body, company_id: req.user.id });
+    const { street, city, province, country, postalCode, ...rest } = req.body;
+    const newJob = new Job({
+      ...rest,
+      company_id: req.user.id,
+      location: { street, city, province, country, postalCode },
+    });
     const job = await newJob.save();
     res.status(201).json(job);
   } catch (err) {
@@ -12,7 +17,7 @@ export const createJob = async (req, res) => {
 
 export const updateJob = async (req, res) => {
   const { id } = req.params;
-  const { title, skills, description, requirements, location, expiry_date, role, salary } = req.body;
+  const { title, skills, description, requirements, street, city, province, country, postalCode, expiry_date, role, salary } = req.body;
 
   try {
     const job = await Job.findById(id);
@@ -25,10 +30,17 @@ export const updateJob = async (req, res) => {
     if (skills) jobFields.skills = skills;
     if (description) jobFields.description = description;
     if (requirements) jobFields.requirements = requirements;
-    if (location) jobFields.location = location;
     if (expiry_date) jobFields.expiry_date = expiry_date;
     if (role) jobFields.role = role;
     if (salary) jobFields.salary = salary;
+
+    // Handle nested location field
+    jobFields.location = {};
+    if (street) jobFields.location.street = street;
+    if (city) jobFields.location.city = city;
+    if (province) jobFields.location.province = province;
+    if (country) jobFields.location.country = country;
+    if (postalCode) jobFields.location.postalCode = postalCode;
 
     const updatedJob = await Job.findByIdAndUpdate(
       id,
