@@ -12,7 +12,7 @@ export const createCompanyProfile = async (req, res) => {
   const companyLogo = req.file ? req.file.path : null;
   const userId = req.user.id;
 
-  console.log('Creating company profile for user ID:', userId);
+  console.log("Creating company profile for user ID:", userId);
 
   const profileFields = {
     userId,
@@ -38,19 +38,63 @@ export const createCompanyProfile = async (req, res) => {
   }
 };
 
-// Get Company Profile
-export const getCompanyProfile = async (req, res) => {
+export const getAllEmployerProfiles = async (req, res) => {
   try {
-    console.log('Fetching company profile for user ID:', req.user.id);
-    const profile = await CompanyProfile.findOne({ userId: req.user.id }).populate("userId", ["name", "email"]);
+    const profiles = await CompanyProfile.find().populate("userId", [
+      "name",
+      "email",
+    ]);
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+// Get Company Profile
+export const getEmployerProfileAdmin = async (req, res) => {
+  try {
+    const empID = req.params.empID;
+    console.log("Fetching company profile for emp ID:", empID);
+
+    const profile = await CompanyProfile.findOne({
+      userId: empID,
+    }).populate("userId", ["name", "email"]);
     if (!profile) {
       return res.status(404).json({ msg: "Profile not found" });
     }
 
     // Construct the correct URL for the profile image
     if (profile.companyLogo) {
-      const imagePath = profile.companyLogo.split('uploads\\')[1]; // Extract the filename
-      profile.companyLogo = `${req.protocol}://${req.get('host')}/uploads/${imagePath}`;
+      const imagePath = profile.companyLogo.split("uploads\\")[1]; // Extract the filename
+      profile.companyLogo = `${req.protocol}://${req.get(
+        "host"
+      )}/uploads/${imagePath}`;
+    }
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+// Get Company Profile
+export const getCompanyProfile = async (req, res) => {
+  try {
+    console.log("Fetching company profile for user ID:", req.user.id);
+    const profile = await CompanyProfile.findOne({
+      userId: req.user.id,
+    }).populate("userId", ["name", "email"]);
+    if (!profile) {
+      return res.status(404).json({ msg: "Profile not found" });
+    }
+
+    // Construct the correct URL for the profile image
+    if (profile.companyLogo) {
+      const imagePath = profile.companyLogo.split("uploads\\")[1]; // Extract the filename
+      profile.companyLogo = `${req.protocol}://${req.get(
+        "host"
+      )}/uploads/${imagePath}`;
     }
     res.json(profile);
   } catch (err) {
@@ -72,7 +116,7 @@ export const updateCompanyProfile = async (req, res) => {
   const companyLogo = req.file ? req.file.path : null;
   const userId = req.user.id;
 
-  console.log('Updating company profile for user ID:', userId);
+  console.log("Updating company profile for user ID:", userId);
 
   const profileFields = {
     userId,
@@ -105,8 +149,10 @@ export const updateCompanyProfile = async (req, res) => {
 
     // Construct the correct URL for the profile image
     if (profile.companyLogo) {
-      const imagePath = profile.companyLogo.split('uploads\\')[1]; // Extract the filename
-      profile.companyLogo = `${req.protocol}://${req.get('host')}/uploads/${imagePath}`;
+      const imagePath = profile.companyLogo.split("uploads\\")[1]; // Extract the filename
+      profile.companyLogo = `${req.protocol}://${req.get(
+        "host"
+      )}/uploads/${imagePath}`;
     }
 
     console.log("Profile updated:", profile);

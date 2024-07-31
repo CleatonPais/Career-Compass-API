@@ -1,8 +1,8 @@
 import express from "express";
 import upload from '../middleware/upload.js';
 import { check } from "express-validator";
-import { createUserProfile, updateUserProfile, getUserProfile } from "../controllers/userProfileController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import { createUserProfile, updateUserProfile, getUserProfile, getUserProfileWithApplications,getAllUserProfiles,deleteUserProfile} from "../controllers/userProfileController.js";
+import { authMiddleware,} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -34,5 +34,11 @@ router.post(
 
 router.put("/updateProfile/:id", [authMiddleware, upload.single('profileImage')], updateUserProfile);
 router.get("/getUserProfile", authMiddleware, getUserProfile);
+
+router.get("/admin/user-profiles",authMiddleware, getAllUserProfiles);
+router.delete("/admin/deleteUserProfile/:userId",authMiddleware, deleteUserProfile);
+// New route to get user profile with job applications (admin only)
+router.get("/admin/user-profile-with-applications/:userId", authMiddleware, getUserProfileWithApplications);
+
 
 export default router;
