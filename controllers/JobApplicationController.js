@@ -186,7 +186,7 @@ export const scheduleInterview = async (req, res) => {
       return res.status(404).json({ msg: "Job Application not found" });
     }
 
-    jobApplication.status = "interview_scheduled";
+    jobApplication.status = "Interview Scheduled";
     jobApplication.interview_dates = interview_dates;
     jobApplication.interview_details = interview_details;
     jobApplication.modified_date = new Date();
@@ -210,7 +210,7 @@ export const confirmInterview = async (req, res) => {
       return res.status(404).json({ msg: "Job Application not found" });
     }
 
-    jobApplication.status = "interview_confirmed";
+    jobApplication.status = "Interview Confirmed";
     jobApplication.interview_dates = interview_dates;
     jobApplication.modified_date = new Date();
 
@@ -232,7 +232,7 @@ export const rejectApplication = async (req, res) => {
       return res.status(404).json({ msg: "Job Application not found" });
     }
 
-    jobApplication.status = "rejected";
+    jobApplication.status = "Rejected";
     jobApplication.modified_date = new Date();
 
     await jobApplication.save();
@@ -253,7 +253,7 @@ export const approveApplication = async (req, res) => {
       return res.status(404).json({ msg: "Job Application not found" });
     }
 
-    jobApplication.status = "approved";
+    jobApplication.status = "Approved";
     jobApplication.modified_date = new Date();
 
     await jobApplication.save();
