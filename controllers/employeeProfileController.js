@@ -57,10 +57,12 @@ export const getAllEmployerProfiles = async (req, res) => {
 // Get Company Profile
 export const getEmployerProfileAdmin = async (req, res) => {
   try {
-    const companyId = req.params.companyId;  // Ensure this matches the route parameter
+    const companyId = req.params.companyId; // Ensure this matches the route parameter
     console.log("Fetching company profile for company ID:", companyId);
 
-    const profile = await CompanyProfile.findOne({ userId: companyId }).populate("userId", ["name", "email"]);
+    const profile = await CompanyProfile.findOne({
+      userId: companyId,
+    }).populate("userId", ["name", "email"]);
     if (!profile) {
       console.log("Company profile not found for company ID:", companyId);
       return res.status(404).json({ msg: "Profile not found" });
@@ -76,12 +78,11 @@ export const getEmployerProfileAdmin = async (req, res) => {
   }
 };
 
-
 // Get Company Profile
 export const getCompanyProfile = async (req, res) => {
   try {
     console.log("Fetching company profile for user ID:", req.user.id);
-    const profile = await CompanyProfile.findOne({  
+    const profile = await CompanyProfile.findOne({
       userId: req.user.id,
     }).populate("userId", ["name", "email"]);
     if (!profile) {
@@ -170,7 +171,7 @@ export const updateCompanyProfile = async (req, res) => {
 //     // Delete the employer profile by companyId
 //     const employerProfile = await CompanyProfile.findOneAndDelete(  companyId );
 //     const employer = await Company.findOneAndDelete( companyId );
-//     // If your schema uses userId directly, use: 
+//     // If your schema uses userId directly, use:
 //     // const employerProfile = await CompanyProfile.findOneAndDelete({ userId: companyId });
 
 //     if (!employerProfile) {
@@ -187,20 +188,31 @@ export const updateCompanyProfile = async (req, res) => {
 // };
 
 export const deleteEmployerProfile = async (req, res) => {
+  console.log("in deleteEmployerProfile");
   try {
     const companyId = req.params.companyId;
+    console.log("deleting elmpoyer" + companyId);
 
     // Delete the company profile
-    const companyProfile = await CompanyProfile.findOneAndDelete({ companyId });
+    let company = await Company.findOneAndDelete({ _id: companyId });
+    if (!company) {
+      return res.status(404).json({ msg: "Company not found" });
+    }
+
+    let companyProfile = await CompanyProfile.findOneAndDelete({
+      userId: companyId,
+    });
     if (!companyProfile) {
       return res.status(404).json({ msg: "Company profile not found" });
     }
 
-    // Delete the user associated with the company
-    await User.findByIdAndDelete(companyId);
-
-    // Delete all jobs posted by this company
-    await job.deleteMany({ companyId: companyProfile._id });
+    let jobs = await job.deleteMany({ company_id: companyId });
+    if (!jobs) {
+      return res.status(404).json({ msg: "Company jobs not found" });
+    }
+    // console.log("Company: ", company);
+    // console.log("Company Profile: ", companyProfile);
+    // console.log("Jobs:", jobs);
 
     res.json({ msg: "Company profile and associated jobs deleted" });
   } catch (err) {
@@ -208,5 +220,3 @@ export const deleteEmployerProfile = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
-
