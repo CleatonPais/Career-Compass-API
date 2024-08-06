@@ -47,7 +47,7 @@ router.get(
 );
 
 router.get(
-  "/deleteEmployerProfile/:empID",
+  "/deleteEmployerProfile/:companyId",
   authMiddleware,
   deleteEmployerProfile
 );
