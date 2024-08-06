@@ -11,6 +11,7 @@ export const storeUserSession = async (user_id, user_role, token) => {
 
   if (existingSession) {
     // Update the request_date of the existing session
+    existingSession.auth_token = token;
     existingSession.request_date = new Date();
     await existingSession.save();
   } else {
