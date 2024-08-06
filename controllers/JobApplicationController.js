@@ -1,4 +1,5 @@
 import JobApplication from "../models/JobApplicationModel.js";
+import Job from "../models/JobModel.js";
 
 export const createJobApplication = async (req, res) => {
   const {
@@ -25,8 +26,16 @@ export const createJobApplication = async (req, res) => {
   const portfolio = req.files["portfolio"][0].filename;
 
   try {
+    // Fetch the job to get the job title
+    const job = await Job.findById(job_id);
+    if (!job) {
+      return res.status(404).json({ msg: 'Job not found' });
+    }
+
+    // Create a new job application including the job title
     const newJobApplication = new JobApplication({
       job_id,
+      job_title: job.title, 
       user_id,
       company_id,
       firstName,

@@ -10,6 +10,10 @@ const jobApplicationSchema = new mongoose.Schema({
     ref: "Job",
     required: true,
   },
+  job_title: {
+    type: String,
+    required: true 
+  },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
