@@ -3,6 +3,7 @@ import Company from "../models/Company.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
+import { storeUserSession } from "./userSessionController.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -116,6 +117,7 @@ export const login = async (req, res) => {
       };
     } else {
       console.log("sneseky senaky. you dont have the password");
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
     payload = {
@@ -125,8 +127,9 @@ export const login = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, secretKey, { expiresIn: 3600 }, (err, token) => {
+    jwt.sign(payload, secretKey, { expiresIn: 3600 }, async (err, token) => {
       if (err) throw err;
+      await storeUserSession(payload.user.id, payload.user.role, token);
       res.json({ token, user_id: "admin" });
     });
   } else {
@@ -162,8 +165,9 @@ export const login = async (req, res) => {
         },
       };
 
-      jwt.sign(payload, secretKey, { expiresIn: 3600 }, (err, token) => {
+      jwt.sign(payload, secretKey, { expiresIn: 3600 }, async (err, token) => {
         if (err) throw err;
+        await storeUserSession(payload.user.id, payload.user.role, token);
         res.json({ token, user_id: entity.id });
       });
     } catch (err) {

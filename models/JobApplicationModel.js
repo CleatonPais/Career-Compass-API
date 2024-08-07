@@ -10,6 +10,10 @@ const jobApplicationSchema = new mongoose.Schema({
     ref: "Job",
     required: true,
   },
+  job_title: {
+    type: String,
+    required: true 
+  },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -51,15 +55,15 @@ const jobApplicationSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: [
-      "submitted",
-      "approved",
-      "rejected",
-      "pending",
-      "interview_scheduled",
-      "interview_confirmed",
+      "Submitted",
+      "Approved",
+      "Rejected",
+      "Pending",
+      "Interview Scheduled",
+      "Interview Confirmed",
     ],
     required: true,
-    default: "submitted",
+    default: "Submitted",
   },
   interview_dates: [interviewDateSchema],
   interview_details: {
