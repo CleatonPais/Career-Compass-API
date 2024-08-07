@@ -1,4 +1,6 @@
 import Job from "../models/JobModel.js";
+import JobApplication from "../models/JobApplicationModel.js";
+import mongoose from "mongoose";
 
 export const createJob = async (req, res) => {
   try {
@@ -17,7 +19,20 @@ export const createJob = async (req, res) => {
 
 export const updateJob = async (req, res) => {
   const { id } = req.params;
-  const { title, skills, description, requirements, street, city, province, country, postalCode, expiry_date, role, salary } = req.body;
+  const {
+    title,
+    skills,
+    description,
+    requirements,
+    street,
+    city,
+    province,
+    country,
+    postalCode,
+    expiry_date,
+    role,
+    salary,
+  } = req.body;
 
   try {
     const job = await Job.findById(id);
@@ -83,6 +98,29 @@ export const getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find();
     res.json(jobs);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+export const getAvailableJobs = async (req, res) => {
+  const id = req.params.candidateid;
+
+  try {
+    // Fetch all job applications for the given candidate
+    const appliedJobs = await JobApplication.find(
+      { user_id: new mongoose.Types.ObjectId(id) },
+      "job_id"
+    );
+
+    // Extract the job IDs from these applications
+    const appliedJobIds = appliedJobs.map((application) => application.job_id);
+
+    // Fetch all jobs excluding those with the IDs found in the applications
+    const availableJobs = await Job.find({ _id: { $nin: appliedJobIds } });
+
+    res.json(availableJobs);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");

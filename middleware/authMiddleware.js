@@ -8,7 +8,6 @@ const secretKey = process.env.JWT_SECRET;
 export const authMiddleware = async (req, res, next) => {
   // Get token from header
   const token = req.header("x-auth-token");
-  console.log("aM token:", token);
 
   // Check if no token
   if (!token) {
@@ -21,15 +20,12 @@ export const authMiddleware = async (req, res, next) => {
 
     // Attach user info to request
     req.user = decoded.user;
-    console.log(req.user);
 
     // Find the user session
     const session = await UserSession.findOne({
       user_id: req.user.id,
       auth_token: token,
     });
-
-    console.log("session: ", session);
 
     if (!session) {
       return res
