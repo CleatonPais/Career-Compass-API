@@ -46,7 +46,7 @@ router.get(
   getEmployerProfileAdmin
 );
 
-router.get(
+router.delete(
   "/deleteEmployerProfile/:companyId",
   authMiddleware,
   deleteEmployerProfile
