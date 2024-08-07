@@ -6,6 +6,7 @@ import profileRoutes from "./routes/companyProfileRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 import jobApplicationRoutes from "./routes/jobApplicationRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
@@ -48,5 +49,6 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/userprofile", userProfileRoutes);
 app.use("/api/jobapplications", jobApplicationRoutes);
+app.use("/api/admin", adminRoutes);
 
 export default app;
