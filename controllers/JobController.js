@@ -1,8 +1,15 @@
 import Job from "../models/JobModel.js";
+import JobApplication from "../models/JobApplicationModel.js";
+import mongoose from "mongoose";
 
 export const createJob = async (req, res) => {
   try {
-    const newJob = new Job({ ...req.body, company_id: req.user.id });
+    const { street, city, province, country, postalCode, ...rest } = req.body;
+    const newJob = new Job({
+      ...rest,
+      company_id: req.user.id,
+      location: { street, city, province, country, postalCode },
+    });
     const job = await newJob.save();
     res.status(201).json(job);
   } catch (err) {
@@ -12,7 +19,20 @@ export const createJob = async (req, res) => {
 
 export const updateJob = async (req, res) => {
   const { id } = req.params;
-  const { title, skills, description, requirements, location, expiry_date, role, salary } = req.body;
+  const {
+    title,
+    skills,
+    description,
+    requirements,
+    street,
+    city,
+    province,
+    country,
+    postalCode,
+    expiry_date,
+    role,
+    salary,
+  } = req.body;
 
   try {
     const job = await Job.findById(id);
@@ -25,10 +45,17 @@ export const updateJob = async (req, res) => {
     if (skills) jobFields.skills = skills;
     if (description) jobFields.description = description;
     if (requirements) jobFields.requirements = requirements;
-    if (location) jobFields.location = location;
     if (expiry_date) jobFields.expiry_date = expiry_date;
     if (role) jobFields.role = role;
     if (salary) jobFields.salary = salary;
+
+    // Handle nested location field
+    jobFields.location = {};
+    if (street) jobFields.location.street = street;
+    if (city) jobFields.location.city = city;
+    if (province) jobFields.location.province = province;
+    if (country) jobFields.location.country = country;
+    if (postalCode) jobFields.location.postalCode = postalCode;
 
     const updatedJob = await Job.findByIdAndUpdate(
       id,
@@ -71,6 +98,29 @@ export const getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find();
     res.json(jobs);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+export const getAvailableJobs = async (req, res) => {
+  const id = req.params.candidateid;
+
+  try {
+    // Fetch all job applications for the given candidate
+    const appliedJobs = await JobApplication.find(
+      { user_id: new mongoose.Types.ObjectId(id) },
+      "job_id"
+    );
+
+    // Extract the job IDs from these applications
+    const appliedJobIds = appliedJobs.map((application) => application.job_id);
+
+    // Fetch all jobs excluding those with the IDs found in the applications
+    const availableJobs = await Job.find({ _id: { $nin: appliedJobIds } });
+
+    res.json(availableJobs);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");

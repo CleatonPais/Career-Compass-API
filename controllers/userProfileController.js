@@ -173,19 +173,12 @@ export const getUserProfileWithApplications = async (req, res) => {
       }
     });
 
-    // Check if the user has applied for any jobs
-    if (!jobApplications.length) {
-      console.log("No job applications found for userId:", userId); // Debugging log
-      return res.status(404).json({ msg: "No job applications found for this user" });
-    }
-
     res.json({ userProfile, jobApplications });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
 };
-
 
 export const deleteUserProfile = async (req, res) => {
   try {
