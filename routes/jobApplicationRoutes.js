@@ -15,6 +15,7 @@ import {
   rejectApplication,
   approveApplication,
   confirmInterview,
+  calculateSkillMatch 
 } from "../controllers/JobApplicationController.js";
 
 const router = express.Router();
@@ -80,5 +81,20 @@ router.put("/rejectapplication/:id", authMiddleware, rejectApplication);
 
 // accept application
 router.put("/approveapplication/:id", authMiddleware, approveApplication);
+
+ //Calculate skill match and determine fit category
+router.get(
+  "/calculateskillmatch/:candidateId/:jobId",
+  authMiddleware,
+  async (req, res) => {
+    const { candidateId, jobId } = req.params;
+    const result = await calculateSkillMatch(candidateId, jobId);
+    if (result.error) {
+      return res.status(400).json({ msg: result.error });
+    }
+    res.json(result);
+  }
+);
+
 
 export default router;

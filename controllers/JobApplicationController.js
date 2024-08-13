@@ -1,5 +1,6 @@
 import JobApplication from "../models/JobApplicationModel.js";
 import Job from "../models/JobModel.js";
+import UserProfile from "../models/UserProfile.js";
 
 export const createJobApplication = async (req, res) => {
   const {
@@ -270,5 +271,49 @@ export const approveApplication = async (req, res) => {
   } catch (err) {
     console.error(`Server error: ${err.message}`);
     res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+
+export const calculateSkillMatch = async (candidateId, jobId) => {
+  try {
+
+    
+    // Fetch candidate profile and job posting
+    const candidate = await UserProfile.findById(candidateId);
+    if (!candidate) {
+      console.log('Candidate not found with ID:', candidateId);
+      return { error: "Candidate not found" };
+    }
+
+    const job = await Job.findById(jobObjectId);
+    if (!job) {
+      console.log('Job not found with ID:', jobId);
+      return { error: "Job not found" };
+    }
+
+    // Extract skills from both
+    const candidateSkills = candidate.skills.split(',').map(skill => skill.trim()); 
+    const jobSkills = job.skills.map(skill => skill.trim());
+
+    // Calculate skill match percentage
+    const matchedSkills = candidateSkills.filter(skill => jobSkills.includes(skill));
+    const matchPercentage = (matchedSkills.length / jobSkills.length) * 100;
+
+    // Determine the fit category based on the match percentage
+    let fitCategory;
+    if (matchPercentage <= 50) {
+      fitCategory = "Not Fit";
+    } else if (matchPercentage <= 70) {
+      fitCategory = "Average Fit";
+    } else {
+      fitCategory = "Perfect Fit";
+    }
+
+    return { matchPercentage, fitCategory };
+  } catch (err) {
+    console.error('Error calculating skill match:', err.message);
+    return { error: "Server error" };
   }
 };
