@@ -30,13 +30,13 @@ export const createJobApplication = async (req, res) => {
     // Fetch the job to get the job title
     const job = await Job.findById(job_id);
     if (!job) {
-      return res.status(404).json({ msg: 'Job not found' });
+      return res.status(404).json({ msg: "Job not found" });
     }
 
     // Create a new job application including the job title
     const newJobApplication = new JobApplication({
       job_id,
-      job_title: job.title, 
+      job_title: job.title,
       user_id,
       company_id,
       firstName,
@@ -87,7 +87,22 @@ export const getEmployerJobApplication = async (req, res) => {
       return res.status(404).json({ msg: "No Job Applications found" });
     }
 
-    res.json(jobApplications);
+    // Iterate over each job application and fetch skill match data
+    const jobApplicationsWithSkillMatch = await Promise.all(
+      jobApplications.map(async (application) => {
+        const skillMatch = await calculateSkillMatch(
+          application.user_id,
+          application.job_id
+        );
+        return {
+          ...application.toObject(), // Convert mongoose document to plain object
+          skillMatch,
+        };
+      })
+    );
+
+    res.json(jobApplicationsWithSkillMatch);
+    // res.json(jobApplications);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -274,31 +289,34 @@ export const approveApplication = async (req, res) => {
   }
 };
 
-
-
 export const calculateSkillMatch = async (candidateId, jobId) => {
-  try {
+  console.log("candaite: ", candidateId, " jobid:", jobId);
 
-    
+  try {
     // Fetch candidate profile and job posting
-    const candidate = await UserProfile.findById(candidateId);
+    const candidate = await UserProfile.findOne({ userId: candidateId });
     if (!candidate) {
-      console.log('Candidate not found with ID:', candidateId);
+      console.log("Candidate not found with ID:", candidateId);
       return { error: "Candidate not found" };
     }
 
-    const job = await Job.findById(jobObjectId);
+    const job = await Job.findById(jobId);
     if (!job) {
-      console.log('Job not found with ID:', jobId);
+      console.log("Job not found with ID:", jobId);
       return { error: "Job not found" };
     }
 
     // Extract skills from both
-    const candidateSkills = candidate.skills.split(',').map(skill => skill.trim()); 
-    const jobSkills = job.skills.map(skill => skill.trim());
+    const candidateSkills = candidate.skills
+      .split(",")
+      .map((skill) => skill.trim());
+    const jobSkills = job.skills.map((skill) => skill.trim());
+    console.log(candidateSkills, "|||", jobSkills);
 
     // Calculate skill match percentage
-    const matchedSkills = candidateSkills.filter(skill => jobSkills.includes(skill));
+    const matchedSkills = candidateSkills.filter((skill) =>
+      jobSkills.includes(skill)
+    );
     const matchPercentage = (matchedSkills.length / jobSkills.length) * 100;
 
     // Determine the fit category based on the match percentage
@@ -313,7 +331,7 @@ export const calculateSkillMatch = async (candidateId, jobId) => {
 
     return { matchPercentage, fitCategory };
   } catch (err) {
-    console.error('Error calculating skill match:', err.message);
+    console.error("Error calculating skill match:", err.message);
     return { error: "Server error" };
   }
 };

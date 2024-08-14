@@ -1,6 +1,7 @@
 import Job from "../models/JobModel.js";
 import JobApplication from "../models/JobApplicationModel.js";
 import mongoose from "mongoose";
+import { calculateSkillMatch } from "../controllers/JobApplicationController.js";
 
 export const createJob = async (req, res) => {
   try {
@@ -120,7 +121,25 @@ export const getAvailableJobs = async (req, res) => {
     // Fetch all jobs excluding those with the IDs found in the applications
     const availableJobs = await Job.find({ _id: { $nin: appliedJobIds } });
 
-    res.json(availableJobs);
+    // Calculate skill match for each available job
+    const jobsWithSkillMatch = await Promise.all(
+      availableJobs.map(async (job) => {
+        const { matchPercentage, fitCategory } = await calculateSkillMatch(
+          id,
+          job._id
+        );
+        return {
+          ...job.toObject(),
+          skillMatch: {
+            matchPercentage,
+            fitCategory,
+          },
+        };
+      })
+    );
+
+    res.json(jobsWithSkillMatch);
+    // res.json(availableJobs);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
