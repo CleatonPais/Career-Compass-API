@@ -1,5 +1,8 @@
 import CompanyProfile from "../models/CompanyProfile.js";
 import { validationResult } from "express-validator";
+import JobApplication from "../models/JobApplicationModel.js";
+import job from "../models/JobModel.js";
+import Company from "../models/Company.js";
 
 // Create Company Profile
 export const createCompanyProfile = async (req, res) => {
@@ -54,26 +57,23 @@ export const getAllEmployerProfiles = async (req, res) => {
 // Get Company Profile
 export const getEmployerProfileAdmin = async (req, res) => {
   try {
-    const empID = req.params.empID;
-    console.log("Fetching company profile for emp ID:", empID);
+    const companyId = req.params.companyId; // Ensure this matches the route parameter
+    console.log("Fetching company profile for company ID:", companyId);
 
     const profile = await CompanyProfile.findOne({
-      userId: empID,
+      userId: companyId,
     }).populate("userId", ["name", "email"]);
     if (!profile) {
+      console.log("Company profile not found for company ID:", companyId);
       return res.status(404).json({ msg: "Profile not found" });
     }
 
-    // Construct the correct URL for the profile image
-    if (profile.companyLogo) {
-      const imagePath = profile.companyLogo.split("uploads\\")[1]; // Extract the filename
-      profile.companyLogo = `${req.protocol}://${req.get(
-        "host"
-      )}/uploads/${imagePath}`;
-    }
-    res.json(profile);
+    // Fetch the jobs created by the company
+    const jobs = await job.find({ company_id: companyId });
+
+    res.json({ profile, jobs });
   } catch (err) {
-    console.error(err.message);
+    console.error("Error fetching company profile with jobs:", err.message);
     res.status(500).send("Server error");
   }
 };
@@ -159,6 +159,64 @@ export const updateCompanyProfile = async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error("Server error:", err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+// export const deleteEmployerProfile = async (req, res) => {
+//   try {
+//     const companyId = req.params.companyId;
+//     console.log("companyId:", companyId);
+
+//     // Delete the employer profile by companyId
+//     const employerProfile = await CompanyProfile.findOneAndDelete(  companyId );
+//     const employer = await Company.findOneAndDelete( companyId );
+//     // If your schema uses userId directly, use:
+//     // const employerProfile = await CompanyProfile.findOneAndDelete({ userId: companyId });
+
+//     if (!employerProfile) {
+//       console.log("Profile not found");
+//       return res.status(404).json({ msg: "Employer profile not found" });
+//     }
+
+//     console.log("Profile deleted:", employerProfile);
+//     res.json({ msg: "Employer profile deleted" });
+//   } catch (err) {
+//     console.error("Server error:", err.message);
+//     res.status(500).send("Server error");
+//   }
+// };
+
+export const deleteEmployerProfile = async (req, res) => {
+  console.log("in deleteEmployerProfile");
+  try {
+    const companyId = req.params.companyId;
+    console.log("deleting elmpoyer" + companyId);
+
+    // Delete the company profile
+    let company = await Company.findOneAndDelete({ _id: companyId });
+    if (!company) {
+      return res.status(404).json({ msg: "Company not found" });
+    }
+
+    let companyProfile = await CompanyProfile.findOneAndDelete({
+      userId: companyId,
+    });
+    if (!companyProfile) {
+      return res.status(404).json({ msg: "Company profile not found" });
+    }
+
+    let jobs = await job.deleteMany({ company_id: companyId });
+    if (!jobs) {
+      return res.status(404).json({ msg: "Company jobs not found" });
+    }
+    // console.log("Company: ", company);
+    // console.log("Company Profile: ", companyProfile);
+    // console.log("Jobs:", jobs);
+
+    res.json({ msg: "Company profile and associated jobs deleted" });
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 };

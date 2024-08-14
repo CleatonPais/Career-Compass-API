@@ -7,6 +7,7 @@ import {
   getCompanyProfile,
   getAllEmployerProfiles,
   getEmployerProfileAdmin,
+  deleteEmployerProfile,
 } from "../controllers/employeeProfileController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -39,6 +40,16 @@ router.get("/getCompanyProfile", authMiddleware, getCompanyProfile);
 
 router.get("/getAllEmployers", authMiddleware, getAllEmployerProfiles);
 
-router.get("/getEmployerAdmin/:empID", authMiddleware, getEmployerProfileAdmin);
+router.get(
+  "/getEmployerAdmin/:companyId",
+  authMiddleware,
+  getEmployerProfileAdmin
+);
+
+router.delete(
+  "/deleteEmployerProfile/:companyId",
+  authMiddleware,
+  deleteEmployerProfile
+);
 
 export default router;
